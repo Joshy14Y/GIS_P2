@@ -3,7 +3,8 @@ from qgis.gui import QgsMapCanvas, QgsMapToolZoom, QgsMapToolIdentifyFeature
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsVectorLayer, QgsProject
 from PyQt5.QtSql import *
-
+from test import SingleReservationWindow
+from test import WeeklyReservationWindow
 class db_conn():
     def __init__(self):
         self.con = QSqlDatabase.addDatabase("QPSQL")
@@ -12,19 +13,7 @@ class db_conn():
         self.con.setDatabaseName("cursoGIS")
         self.con.setUserName("usr_GIS")
         self.con.setPassword("usr_GIS")
-def showDialog():
-    msgBox = QMessageBox()
-    msgBox.setIcon(QMessageBox.Information)
-    msgBox.setText("Desea reservar de manera semestral?")
-    msgBox.setWindowTitle("Tipo de reserva")
-    msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    returnValue = msgBox.exec()
-    if returnValue == QMessageBox.Ok:
-        return True
-    else:
-        return False
    
-
 def getUri(esquema, capa):
     return (f"""dbname='cursoGIS' 
                 host='leoviquez.com' 
@@ -211,7 +200,17 @@ class ClassroomSelectTool(QgsMapToolIdentify):
         super().__init__(canvas)
         self.canvas = canvas
         self.classroom_windows = {}
-
+    def showDialog(self):
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText("Desea reservar de manera semestral?")
+        msgBox.setWindowTitle("Tipo de reserva")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        returnValue = msgBox.exec()
+        if returnValue == QMessageBox.Ok:
+            return True
+        else:
+            return False
     def canvasReleaseEvent(self, event):
         classroom_clicked = []
 
@@ -225,11 +224,17 @@ class ClassroomSelectTool(QgsMapToolIdentify):
             for classroom in classroom_clicked:
                 classroom_id = classroom.attribute('classroom_id')  # Assuming 'building_id' is the attribute name
                 print(classroom_id)  
-                self.response = showDialog()
+                self.response = self.showDialog()
                 if self.response:
                     print("Reserva semestral")
+                    self.window = WeeklyReservationWindow(classroom_id)
+                    self.window.show()
                 else:
                     print("Reserva diaria")
+                    self.window = SingleReservationWindow(classroom_id)
+                    self.window.show()
+
+                    
 
     # FUNCION DE LUZ PARA ABRIR FORM CON ID  
 

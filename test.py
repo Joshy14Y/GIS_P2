@@ -28,7 +28,8 @@ def validate_times(start_time, end_time):
     return True
 
 class WeeklyReservationWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, classroom_id):
+        self.classroom = classroom_id
         super().__init__()
 
         self.setWindowTitle("Insert Weekly Reservation")
@@ -106,7 +107,7 @@ class WeeklyReservationWindow(QMainWindow):
         query.prepare("SELECT * FROM p2jjl.insert_weekly_reservation(:name, :tec_id, :classroom_id, :start_date, :end_date, :start_time, :end_time, :day_of_week)")
         query.bindValue(":name", name)
         query.bindValue(":tec_id", user_id)
-        query.bindValue(":classroom_id", 1)  # Assuming classroom_id is 1
+        query.bindValue(":classroom_id", self.classroom)  # Assuming classroom_id is 1
         query.bindValue(":start_date", start_date)
         query.bindValue(":end_date", end_date)
         query.bindValue(":start_time", start_time)
@@ -141,7 +142,8 @@ class WeeklyReservationWindow(QMainWindow):
                 QMessageBox.information(self, "Success", "Weekly events inserted successfully")
 
 class SingleReservationWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, classroom_id):
+        self.classroom = classroom_id
         super().__init__()
 
         self.setWindowTitle("Insert Single Reservation")
@@ -184,7 +186,6 @@ class SingleReservationWindow(QMainWindow):
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
-
         # Connect to the database
         self.db = QSqlDatabase.addDatabase("QPSQL")
         self.db.setHostName("leoviquez.com")
@@ -200,6 +201,7 @@ class SingleReservationWindow(QMainWindow):
         self.model = QSqlQueryModel()
         self.table_view.setModel(self.model)
         self.update_model()
+        
     
     def update_model(self):
         # Execute the SQL query to fetch data
@@ -227,7 +229,7 @@ class SingleReservationWindow(QMainWindow):
         query.prepare("SELECT * FROM p2jjl.insert_single_reservation(:name, :tec_id, :classroom_id, :date, :start_time, :end_time)")
         query.bindValue(":name", name)
         query.bindValue(":tec_id", user_id)
-        query.bindValue(":classroom_id", 1)  # Assuming classroom_id is 1
+        query.bindValue(":classroom_id", self.classroom )  # Assuming classroom_id is 1
         query.bindValue(":date", date)
         query.bindValue(":start_time", start_time)
         query.bindValue(":end_time", end_time)
@@ -261,7 +263,3 @@ class SingleReservationWindow(QMainWindow):
         self.update_model()
 
 
-app = QApplication(sys.argv)
-window = SingleReservationWindow()
-window.show()
-sys.exit(app.exec_())
