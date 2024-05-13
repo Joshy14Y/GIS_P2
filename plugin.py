@@ -1,9 +1,30 @@
-from qgis.PyQt.QtWidgets import QAction, QMainWindow
+from qgis.PyQt.QtWidgets import QAction, QMainWindow,QMessageBox
 from qgis.gui import QgsMapCanvas, QgsMapToolZoom, QgsMapToolIdentifyFeature
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsVectorLayer, QgsProject
 from PyQt5.QtSql import *
- 
+
+class db_conn():
+    def __init__(self):
+        self.con = QSqlDatabase.addDatabase("QPSQL")
+        self.con.setHostName("leoviquez.com")
+        self.con.setPort(15432)
+        self.con.setDatabaseName("cursoGIS")
+        self.con.setUserName("usr_GIS")
+        self.con.setPassword("usr_GIS")
+def showDialog():
+    msgBox = QMessageBox()
+    msgBox.setIcon(QMessageBox.Information)
+    msgBox.setText("Desea reservar de manera semestral?")
+    msgBox.setWindowTitle("Tipo de reserva")
+    msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    returnValue = msgBox.exec()
+    if returnValue == QMessageBox.Ok:
+        return True
+    else:
+        return False
+   
+
 def getUri(esquema, capa):
     return (f"""dbname='cursoGIS' 
                 host='leoviquez.com' 
@@ -204,8 +225,20 @@ class ClassroomSelectTool(QgsMapToolIdentify):
             for classroom in classroom_clicked:
                 classroom_id = classroom.attribute('classroom_id')  # Assuming 'building_id' is the attribute name
                 print(classroom_id)  
+                self.response = showDialog()
+                if self.response:
+                    print("Reserva semestral")
+                else:
+                    print("Reserva diaria")
 
     # FUNCION DE LUZ PARA ABRIR FORM CON ID  
+
+
+
+
+db = db_conn()
+                
+mi_mapa = BuildingMap()
 
 # class MapActionsToolbar(QToolBar):
 #     def __init__(self, canvas):
@@ -233,6 +266,3 @@ class ClassroomSelectTool(QgsMapToolIdentify):
 #     def zoomOut(self):
 #         self.canvas.setMapTool(QgsMapToolZoom(self.canvas, False))
 
-db = dbConn()
-                
-mi_mapa = BuildingMap()
