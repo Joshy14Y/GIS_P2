@@ -143,9 +143,10 @@ class WeeklyReservationWindow(QMainWindow):
 
 class SingleReservationWindow(QMainWindow):
     def __init__(self, classroom_id):
-        self.classroom = classroom_id
         super().__init__()
-
+        
+        self.classroom = classroom_id
+        
         self.setWindowTitle("Insert Single Reservation")
         self.setGeometry(100, 100, 400, 300)
 
@@ -207,8 +208,9 @@ class SingleReservationWindow(QMainWindow):
         # Execute the SQL query to fetch data
         query = QSqlQuery()
         date = self.date_edit.date().toString("yyyy-MM-dd")
-        query.prepare("SELECT * FROM get_events_and_availability(:date)")
+        query.prepare("SELECT * FROM get_events_and_availability(:date, :classroom_id)")
         query.bindValue(":date", date)
+        query.bindValue(":classroom_id", self.classroom_id)
         if not query.exec_():
             print("Error:", query.lastError().text())
         else:
