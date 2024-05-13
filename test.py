@@ -1,6 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QComboBox, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QFormLayout, QMessageBox, QDateTimeEdit, QDateEdit
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery
+from PyQt5.QtWidgets import QApplication, QComboBox, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QFormLayout, QMessageBox, QDateTimeEdit, QDateEdit, QTableView
+from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlQueryModel
 from PyQt5.QtCore import QDate, QTime
 
 def validate_dates(start_date, end_date):
@@ -153,6 +153,7 @@ class SingleReservationWindow(QMainWindow):
         self.date_edit = QDateEdit()
         self.date_edit.setCalendarPopup(True)
         self.date_edit.setDate(QDate.currentDate())
+        self.date_edit.dateChanged.connect(self.update_model)  # Connect the signal to update the model
 
         self.start_time_edit = QComboBox()
         self.end_time_edit = QComboBox()
@@ -176,6 +177,10 @@ class SingleReservationWindow(QMainWindow):
         layout.addLayout(form_layout)
         layout.addWidget(submit_button)
 
+
+        self.table_view = QTableView()  # Create a table view to display the data
+        layout.addWidget(self.table_view)
+
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
@@ -190,6 +195,22 @@ class SingleReservationWindow(QMainWindow):
         if not self.db.open():
             QMessageBox.critical(self, "Error", f"Failed to connect to database: {self.db.lastError().text()}")
             sys.exit(1)
+
+        # Create a QSqlQueryModel to fetch data from the database
+        self.model = QSqlQueryModel()
+        self.table_view.setModel(self.model)
+        self.update_model()
+    
+    def update_model(self):
+        # Execute the SQL query to fetch data
+        query = QSqlQuery()
+        date = self.date_edit.date().toString("yyyy-MM-dd")
+        query.prepare("SELECT * FROM get_events_and_availability(:date)")
+        query.bindValue(":date", date)
+        if not query.exec_():
+            print("Error:", query.lastError().text())
+        else:
+            self.model.setQuery(query)
     
     def submit_form(self):
         name = self.name_edit.text()
@@ -237,6 +258,7 @@ class SingleReservationWindow(QMainWindow):
                 QMessageBox.information(self, "Warning", message)
             else:
                 QMessageBox.information(self, "Success", "Single reservation inserted successfully")
+        self.update_model()
 
 
 app = QApplication(sys.argv)
