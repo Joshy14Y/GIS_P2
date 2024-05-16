@@ -3,19 +3,27 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import { useEffect, useState } from 'react';
+import { getUsers } from '../../client/ClientConn';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
 
     const [identifier, setIdentifier] = useState(0);
-
-
+    const [users, setUsers] = useState([]);
+    const [userFlag, setUserFlag] = useState(false);
+    const navigate = useNavigate();
     function handleSubmit(e) {
         // Previene que el navegador recargue la página
         console.log('identifier', identifier);
         e.preventDefault();
-        /*
-        
 
+        users.map((user) => {
+            if (user.tec_id === identifier) {
+                console.log('el usuario existe');
+                setUserFlag(true);
+            }
+        })
+        /*
         console.log('event:', e);
         // Lee los datos del formulario
 
@@ -32,10 +40,39 @@ export const Login = () => {
             console.log(formJson);
         */
     }
+    const get_Teachers = async () => {
+        let data = []
+        const result = await getUsers();
+        result.map((user) => {
+            data.push(user)
+        })
+        setUsers(data);
+    }
     useEffect(() => {
         if (identifier !== 0) console.log('UseEffect identifier', identifier)
     }, [identifier])
 
+    useEffect(() => {
+        if (users.length > 0) console.log(users)
+    }, [users])
+
+    useEffect(() => {
+        async function fetchData() {
+            // You can await here
+            const response = await get_Teachers();
+            console.log('response', response)
+        }
+        fetchData();
+    }, [])
+
+
+    useEffect(() => {
+        if (userFlag) {
+            console.log(userFlag);
+            navigate('/reservation');
+            // redireccionar a la pagina de Reservation
+        }
+    }, [userFlag])
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -53,7 +90,6 @@ export const Login = () => {
                         </FloatingLabel>
                         <Button type="submit" className="m-3" variant="primary">Login</Button>
                     </form>
-
                 </Card.Body>
             </Card>
         </div>

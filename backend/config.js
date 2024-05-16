@@ -28,6 +28,29 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Parse JSON bodies (as sent by API clients)
 app.use(bodyParser.json());
 
+// Querys ---------------------------------
+
+// Define an Express route handler to execute the function
+app.get("/users", async (req, res) => {
+  try {
+    // Connect to the database
+    const client = await pool.connect();
+    // Execute the function
+    const result = await client.query(
+      "select * from p2jjl.user"
+    );
+    // Release the client back to the pool
+    client.release();
+    // Send the result as JSON response
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
+
+// Querys ---------------------------------
+
 
 // Start the Express server
 app.listen(port, () => {
