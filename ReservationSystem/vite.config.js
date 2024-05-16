@@ -7,24 +7,42 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      registerType: 'autoUpdate',
       manifest: {
-        display:'standalone',
+        display: 'standalone',
         display_override: ['window-controls-overlay'],
         lang: 'en-EN',
         name: 'PWA GIS Reservation System',
         short_name: 'PWA_GIS_RS',
         description: 'GIS course project, for classroom reservation management, for teachers.',
-        theme_color: '#19223c',
-        background_color: '#d4d4d4',
-        icons: 
-        [
+        background_color: '#FFFFFF',
+        theme_color: '#FFFFFF',
+        "icons": [
           {
-          src: 'vite.svg',
-          sizes: '64x64',
-          type: 'image/png',
-          purpose: 'any',
-        },
-      ]
+            "src": "/pwa-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/pwa-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/pwa-maskable-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+          },
+          {
+            "src": "/pwa-maskable-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+          }
+        ],
       },
     }),
   ],
