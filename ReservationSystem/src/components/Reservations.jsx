@@ -1,8 +1,11 @@
 
 
-
 export const Reservations = () => {
+
+
     return (
-        <div>Reservations</div>
+        <div>
+            <p>this is a message</p>
+        </div>
     )
 }
