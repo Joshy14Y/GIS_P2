@@ -19,18 +19,19 @@ export const Reservations = () => {
             console.log(result);
         } catch (error) {
             console.error("Error fetching reservations:", error);
-
         }
     };
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((position) => {
-            console.log(position.coords)
             setCoordinates({
                 lat: position.coords.latitude,
                 log: position.coords.longitude
             })
         })
+        if (id !== null) {
+            get_Teacher_Reservations(id);
+        }
 
     }, [])
 
@@ -38,14 +39,6 @@ export const Reservations = () => {
         console.log('coordinates', coordinates)
     }, [coordinates])
 
-
-    useEffect(() => {
-        console.log('id', id)
-        if (id !== null) {
-            get_Teacher_Reservations(id);
-        }
-
-    }, [])
 
     return (
         <div>

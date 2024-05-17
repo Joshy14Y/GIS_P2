@@ -20,7 +20,6 @@ export const Login = () => {
 
     function handleSubmit(e) {
         // Previene que el navegador recargue la página
-        console.log('identifier', identifier);
         e.preventDefault();
 
         users.map((user) => {
@@ -39,6 +38,7 @@ export const Login = () => {
         })
         setUsers(data);
     }
+
     useEffect(() => {
         if (identifier !== 0) console.log('UseEffect identifier', identifier)
     }, [identifier])
@@ -57,9 +57,7 @@ export const Login = () => {
 
 
     useEffect(() => {
-
         if (userFlag) {
-            console.log(userFlag);
             dispatch(addId(identifier));
             navigate('/reservation', { replace: true });
         }

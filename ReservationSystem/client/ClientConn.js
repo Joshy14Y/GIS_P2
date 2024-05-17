@@ -18,8 +18,8 @@ export async function getUsers() {
 
 export async function getUserReservations(tecId) {
   try {
-    const response = await axios.get(`/user_reservations?tec_id=${tecId}`);
-    console.log(response.data); // Axios ya convierte la respuesta a JSON automáticamente
+    const response = await axios.get(`${baseURL}/user_reservations?tec_id=${tecId}`);
+    console.log(response.data)
     return response.data; // Retorna directamente los datos de la respuesta
   } catch (error) {
     console.error("Error fetching reservations:", error);

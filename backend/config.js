@@ -47,7 +47,7 @@ app.get("/users", async (req, res) => {
   }
 })
 
-// get all user reservations
+
 app.get("/user_reservations", async (req, res) => {
   const { tec_id } = req.query;
 
@@ -58,25 +58,30 @@ app.get("/user_reservations", async (req, res) => {
   try {
     // Data base connection
     const client = await pool.connect();
+
     // Query to execute
     const result = await client.query(
-      `SELECT * 
+      `SELECT r.*, c.* 
        FROM p2jjl.reservation AS r 
        INNER JOIN p2jjl.classrooms AS c 
        ON r.classroom_id = c.classroom_id
        WHERE r.user_id = (SELECT u.user_id FROM p2jjl."user" u WHERE u.tec_id = $1) 
        AND r.confirmed = false;`,
       [tec_id]
-    );
+    );    
+    
+    const { rows } = result;
     // Release the client back to the pool
     client.release();
+
     // Send the result as response (JSON).
-    res.json(result.rows);
+    res.json(rows);
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching user reservations:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // Start the Express server
 app.listen(port, () => {
