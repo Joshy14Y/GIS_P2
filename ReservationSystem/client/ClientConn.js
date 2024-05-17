@@ -7,11 +7,25 @@ const baseURL = 'http://localhost:3000';
 
 // Define a function to fetch parcelas
 export async function getUsers() {
-    try {
-      const response = await axios.get(`${baseURL}/users`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching Users:', error.response.data);
-      throw error;
-    }
+  try {
+    const response = await axios.get(`${baseURL}/users`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Users:', error.response.data);
+    throw error;
   }
+}
+
+export async function getUserReservations(tecId) {
+  try {
+    const response = await axios.get(`/user_reservations?tec_id=${tecId}`);
+    console.log(response.data); // Axios ya convierte la respuesta a JSON automáticamente
+    return response.data; // Retorna directamente los datos de la respuesta
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    throw error; // Lanza el error para que pueda ser manejado donde se llame a esta función
+  }
+}
+
+
+

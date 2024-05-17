@@ -5,8 +5,13 @@ import Card from 'react-bootstrap/Card';
 import { useEffect, useState } from 'react';
 import { getUsers } from '../../client/ClientConn';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addId } from '../redux/idSlice';
 
 export const Login = () => {
+
+    //const id = useSelector(state => state.identifier.id);
+    const dispatch = useDispatch();
 
     const [identifier, setIdentifier] = useState(0);
     const [users, setUsers] = useState([]);
@@ -25,6 +30,7 @@ export const Login = () => {
             }
         })
     }
+    
     const get_Teachers = async () => {
         let data = []
         const result = await getUsers();
@@ -54,10 +60,11 @@ export const Login = () => {
 
         if (userFlag) {
             console.log(userFlag);
+            dispatch(addId(identifier));
             navigate('/reservation', { replace: true });
         }
 
-    }, [navigate, userFlag])
+    }, [userFlag])
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>

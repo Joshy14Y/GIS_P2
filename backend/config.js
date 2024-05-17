@@ -28,8 +28,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Parse JSON bodies (as sent by API clients)
 app.use(bodyParser.json());
 
-// Querys ---------------------------------
-
 // Define an Express route handler to execute the function
 app.get("/users", async (req, res) => {
   try {
@@ -49,8 +47,36 @@ app.get("/users", async (req, res) => {
   }
 })
 
-// Querys ---------------------------------
+// get all user reservations
+app.get("/user_reservations", async (req, res) => {
+  const { tec_id } = req.query;
 
+  if (!tec_id) {
+    return res.status(400).json({ error: "Missing tec_id parameter" });
+  }
+
+  try {
+    // Data base connection
+    const client = await pool.connect();
+    // Query to execute
+    const result = await client.query(
+      `SELECT * 
+       FROM p2jjl.reservation AS r 
+       INNER JOIN p2jjl.classrooms AS c 
+       ON r.classroom_id = c.classroom_id
+       WHERE r.user_id = (SELECT u.user_id FROM p2jjl."user" u WHERE u.tec_id = $1) 
+       AND r.confirmed = false;`,
+      [tec_id]
+    );
+    // Release the client back to the pool
+    client.release();
+    // Send the result as response (JSON).
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // Start the Express server
 app.listen(port, () => {
