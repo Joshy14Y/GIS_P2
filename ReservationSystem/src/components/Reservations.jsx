@@ -13,14 +13,19 @@ export const Reservations = () => {
         }
     )
 
+    const [reservations, setReservations] = useState([]);
+    const [reservationsToCheck, setReservationsToCheck] = useState([]);
+
     const get_Teacher_Reservations = async (id) => {
         try {
             const result = await getUserReservations(id);
             console.log(result);
+            return result;
         } catch (error) {
             console.error("Error fetching reservations:", error);
         }
     };
+
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -29,15 +34,30 @@ export const Reservations = () => {
                 log: position.coords.longitude
             })
         })
-        if (id !== null) {
-            get_Teacher_Reservations(id);
-        }
 
+        //local = []
+        async function fetchData(id) {
+            if (id !== null) {
+                const response = await get_Teacher_Reservations(id)
+                setReservationsToCheck(response);
+                console.log(response);
+            }
+
+        }
+        fetchData(id);
+
+
+        // la verificacion de la distancia
     }, [])
+
 
     useEffect(() => {
         console.log('coordinates', coordinates)
     }, [coordinates])
+
+    useEffect(() => {
+        console.log('reservationsToCheck', reservationsToCheck)
+    }, [reservationsToCheck])
 
 
     return (

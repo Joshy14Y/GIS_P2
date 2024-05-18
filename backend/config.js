@@ -82,6 +82,10 @@ app.get("/user_reservations", async (req, res) => {
   }
 });
 
+// peticion para verificar distancia
+
+//peticion para cambiar estado a aceptado
+
 
 // Start the Express server
 app.listen(port, () => {
