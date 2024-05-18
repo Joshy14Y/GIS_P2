@@ -27,5 +27,13 @@ export async function getUserReservations(tecId) {
   }
 }
 
-
+export async function verificationDistance(lat, log, geometry) {
+  try {
+    const response = await axios.get(`${baseURL}/check_distance?lat=${lat}&log=${log}&geometry=${geometry}`);
+    return  response.data[0].check_distance; // Retorna directamente los datos de la respuesta
+  } catch (error) {
+    console.error("Error verification distance:", error);
+    throw error; // Lanza el error para que pueda ser manejado donde se llame a esta función
+  }
+}
 

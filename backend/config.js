@@ -68,8 +68,8 @@ app.get("/user_reservations", async (req, res) => {
        WHERE r.user_id = (SELECT u.user_id FROM p2jjl."user" u WHERE u.tec_id = $1) 
        AND r.confirmed = false;`,
       [tec_id]
-    );    
-    
+    );
+
     const { rows } = result;
     // Release the client back to the pool
     client.release();
@@ -83,7 +83,38 @@ app.get("/user_reservations", async (req, res) => {
 });
 
 // peticion para verificar distancia
+app.get("/check_distance", async (req, res) => {
+  const { lat, log, geometry } = req.query;
 
+  if (!lat) {
+    return res.status(400).json({ error: "Missing lat parameter" });
+  }
+  if (!log) {
+    return res.status(400).json({ error: "Missing log parameter" });
+  }
+  if (!geometry) {
+    return res.status(400).json({ error: "Missing geometry parameter" });
+  }
+
+  try {
+    // Data base connection
+    const client = await pool.connect();
+
+    const result = await client.query(`SELECT p2jjl.check_distance($1,$2,$3)`,
+      [lat, log, geometry]);
+
+    const { rows } = result;
+    // Release the client back to the pool
+    client.release();
+
+    // Send the result as response (JSON).
+    res.json(rows);
+  } catch (error) {
+    console.error("Error verification distance:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+
+});
 //peticion para cambiar estado a aceptado
 
 

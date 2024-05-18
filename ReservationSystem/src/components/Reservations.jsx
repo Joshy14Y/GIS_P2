@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
-import { getUserReservations } from "../../client/ClientConn";
+import { getUserReservations, verificationDistance } from "../../client/ClientConn";
 
 export const Reservations = () => {
 
@@ -15,6 +15,7 @@ export const Reservations = () => {
 
     const [reservations, setReservations] = useState([]);
     const [reservationsToCheck, setReservationsToCheck] = useState([]);
+
 
     const get_Teacher_Reservations = async (id) => {
         try {
@@ -35,14 +36,12 @@ export const Reservations = () => {
             })
         })
 
-        //local = []
         async function fetchData(id) {
             if (id !== null) {
                 const response = await get_Teacher_Reservations(id)
                 setReservationsToCheck(response);
                 console.log(response);
             }
-
         }
         fetchData(id);
 
@@ -56,7 +55,19 @@ export const Reservations = () => {
     }, [coordinates])
 
     useEffect(() => {
-        console.log('reservationsToCheck', reservationsToCheck)
+
+        async function fetchData() {
+            if (reservationsToCheck.length > 0) {
+                reservationsToCheck.map(async (reservation) => {
+                    const response = await verificationDistance(coordinates.lat, coordinates.log, reservation.geom);
+                    if (response === true) {
+                        setReservations(prev => [...prev, reservation]);
+                    }
+                    console.log('response from ckecking function: ', response)
+                })
+            }
+        }
+        fetchData()
     }, [reservationsToCheck])
 
 
