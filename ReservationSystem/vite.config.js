@@ -9,6 +9,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
+        id: "/",
+        start_url: "/",
         display: 'standalone',
         display_override: ['window-controls-overlay'],
         lang: 'en-EN',

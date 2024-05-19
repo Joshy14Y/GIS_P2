@@ -70,7 +70,7 @@ export const Login = () => {
                 <Card.Img variant="top" />
                 <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Card.Title>Classroom Reservation System</Card.Title>
-                    <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} onSubmit={(e) => handleSubmit(e)}>
+                    <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onSubmit={(e) => handleSubmit(e)}>
                         <FloatingLabel
                             controlId="floatingInput"
                             label="Institutional identification"
