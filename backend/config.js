@@ -61,12 +61,15 @@ app.get("/user_reservations", async (req, res) => {
 
     // Query to execute
     const result = await client.query(
-      `SELECT r.*, c.* 
-       FROM p2jjl.reservation AS r 
-       INNER JOIN p2jjl.classrooms AS c 
-       ON r.classroom_id = c.classroom_id
-       WHERE r.user_id = (SELECT u.user_id FROM p2jjl."user" u WHERE u.tec_id = $1) 
-       AND r.confirmed = false;`,
+      `	   SELECT r.*, 
+      c.*, 
+      c.name as classroomName,
+      r.name as reservationName
+      FROM p2jjl.reservation AS r
+      INNER JOIN p2jjl.classrooms AS c 
+      ON r.classroom_id = c.classroom_id
+      WHERE r.user_id = (SELECT u.user_id FROM p2jjl."user" u WHERE u.tec_id = $1) 
+      AND r.confirmed = false;`,
       [tec_id]
     );
 
@@ -115,8 +118,63 @@ app.get("/check_distance", async (req, res) => {
   }
 
 });
-//peticion para cambiar estado a aceptado
 
+app.post("/delete_reservation", async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    return res.status(400).json({ error: "Missing id parameter" });
+  }
+
+  try {
+    // Database connection
+    const client = await pool.connect();
+
+    const result = await client.query(`DELETE FROM p2jjl.reservation WHERE reservation_id = $1 RETURNING *;`, [id]);
+
+    // Release the client back to the pool
+    client.release();
+
+    // If no rows were deleted, the reservation was not found
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+
+    // Send a success response
+    res.status(200).json({ message: "Reservation deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put("/update_reservation", async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    return res.status(400).json({ error: "Missing id parameter" });
+  }
+
+  try {
+    // Database connection
+    const client = await pool.connect();
+
+    // Perform the update query
+    const result = await client.query(`UPDATE p2jjl.reservation SET confirmed = TRUE WHERE reservation_id = $1 RETURNING *;`, [id]);
+
+    // Release the client back to the pool
+    client.release();
+
+    // Check if any rows were updated
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+
+    // Send a success response
+    res.status(200).json({ message: "Reservation updated successfully", reservation: result.rows[0] });
+  } catch (error) {
+    console.error("Error updating reservation:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // Start the Express server
 app.listen(port, () => {

@@ -30,10 +30,29 @@ export async function getUserReservations(tecId) {
 export async function verificationDistance(lat, log, geometry) {
   try {
     const response = await axios.get(`${baseURL}/check_distance?lat=${lat}&log=${log}&geometry=${geometry}`);
-    return  response.data[0].check_distance; // Retorna directamente los datos de la respuesta
+    return response.data[0].check_distance; // Retorna directamente los datos de la respuesta
   } catch (error) {
     console.error("Error verification distance:", error);
     throw error; // Lanza el error para que pueda ser manejado donde se llame a esta función
   }
 }
 
+export async function confirmReservation(id) {
+  try {
+    const response = await axios.put(`${baseURL}/update_reservation?id=${id}`);
+    return response
+  } catch (error) {
+    console.error("Error confirming reservation:", error);
+    throw error; // Lanza el error para que pueda ser manejado donde se llame a esta función
+  }
+}
+
+export async function declineReservation(id) {
+  try {
+    const response = await axios.post(`${baseURL}/delete_reservation?id=${id}`);
+    return response
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    throw error; // Lanza el error para que pueda ser manejado donde se llame a esta función
+  }
+}
