@@ -8,6 +8,14 @@ def validate_dates(start_date, end_date):
     start_date_obj = QDate.fromString(start_date, "yyyy-MM-dd")
     end_date_obj = QDate.fromString(end_date, "yyyy-MM-dd")
 
+    # Get current date
+    current_date = QDate.currentDate()
+
+    # Validate that start date is not before current date
+    if start_date_obj < current_date:
+        QMessageBox.critical(None, "Error", "Start date cannot be in the past")
+        return False
+
     # Validate that start date is before end date
     if start_date_obj > end_date_obj:
         QMessageBox.critical(None, "Error", "Start date must be before end date")
@@ -19,6 +27,14 @@ def validate_times(start_time, end_time):
     # Convert start and end times to QTime objects for comparison
     start_time_obj = QTime.fromString(start_time, "HH:mm")
     end_time_obj = QTime.fromString(end_time, "HH:mm")
+
+    # Get current time
+    current_time = QTime.currentTime()
+
+    # Validate that start time is not before current time
+    if start_time_obj < current_time:
+        QMessageBox.critical(None, "Error", "Start time cannot be in the past")
+        return False
 
     # Validate that start time is before end time
     if start_time_obj >= end_time_obj:
